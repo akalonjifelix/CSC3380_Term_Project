@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package comboshed;
 
 import java.awt.BorderLayout;
@@ -22,25 +17,28 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.swing.text.html.HTMLDocument;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 public class UI extends WindowAdapter implements ActionListener {
     private static JFrame frame;
     private static Button submitButton;
-    private static JList list;
+    private static JList<Object> list;
     private static UI current;
     private static JTextPane text;
 
 
-    UI(String title, Object[] array) {
+    UI(String title, ArrayList array) {
         current = this;
         frame = prepareFrame(title);
-        JScrollPane listb = prepareList(array);
+        JScrollPane listb = prepareList(array.toArray());
         Label loginLabel = new Label("Select your teams", 2);
         loginLabel.setForeground(Color.RED);
         loginLabel.setSize(200, 100);
-        loginLabel.setFont(new Font("Something", 1, 19));
+        loginLabel.setFont(new Font("Bold", Font.BOLD, 19));
         JPanel panel = prepareContainer();
         submitButton = prepareButton("generateSchedule");
         panel.add(loginLabel);
@@ -62,7 +60,7 @@ public class UI extends WindowAdapter implements ActionListener {
 
     private static JScrollPane prepareList(Object[] teamArray)
     {
-        list = new JList(teamArray);
+        list = new JList<>(teamArray);
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
         list.setVisibleRowCount(-1);
@@ -79,7 +77,13 @@ public class UI extends WindowAdapter implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Controller.generateSchedule(list.getSelectedValuesList());
+        try {
+            List selected = list.getSelectedValuesList();
+            System.out.println(selected.get(0));
+            Controller.generateSchedule(selected);
+        } catch (BadLocationException e1) {
+            System.out.println("Bad Location Exception thrown");
+        }
     }
 
     private static JPanel prepareContainer() {
@@ -106,41 +110,48 @@ public class UI extends WindowAdapter implements ActionListener {
         return frame;
     }
 
-    private static void makeSchedule(List<Object> e){
-        frame.removeAll();
+    static void makeSchedule(ArrayList<Game> e) throws BadLocationException {
+        frame.setVisible(false);
+        frame.dispose();
         frame = prepareFrame();
         text = prepareTextPane(e);
-        Label label = new Label("You have successfully logged in!");
-        label.setBackground(Color.CYAN);
+        Label label = new Label("wowee!");
+        label.setForeground(Color.CYAN);
         label.setSize(200, 100);
         label.setFont(new Font("Something", 1, 19));
-        frame.add("Center", label);
-        frame.add("Bottom", text);
-        frame.setVisible(false);
+        JPanel panel = new JPanel();
+        panel.add("Center", label);
+        panel.add(text);
+        frame.add(panel);
+        frame.setVisible(true);
     }
 
-    private static JTextPane prepareTextPane(List<Object> e)
-    {
+    private static JTextPane prepareTextPane(ArrayList<Game> e) throws BadLocationException {
         int year = 0, month = 0, day = 0;
         text = new JTextPane();
         StyledDocument doc = text.getStyledDocument();
-        ListIterator iterator = e.listIterator();
-        while(iterator.hasNext())
+        for(int i =0; i < e.size(); i++)
         {
-            Game temp = iterator.next();
-            if(year != temp.getYear() && month != temp.getMonth() && day != temp.getDay())
+            Game temp = e.get(i);
+            if(year != temp.getYear() || month != temp.getMonth() || day != temp.getDay())
             {
-                doc.insertString(doc.getLength(), temp.getMonth().toString() + "/"
-                        + temp.getDay().toString() + "/" + temp.getYear().toString,
+                doc.insertString(doc.getLength(), "\n" + temp.getMonth() + "/"
+                                + temp.getDay() + "/" + temp.getYear() + "\n",
                         doc.getStyle("large"));
-                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpp() + ": " + temp.getTime,
+                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() +"\n",
                         doc.getStyle("regular"));
+                year = temp.getYear();
+                month = temp.getMonth();
+                day = temp.getDay();
             }
             else
             {
-                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpp() + ": " + temp.getTime,
+                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
                         doc.getStyle("regular"));
             }
+            System.out.println(temp.getName());
+            text.setStyledDocument(doc);
+            text.setEditable(false);
         }
         return text;
     }

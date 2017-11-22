@@ -1,13 +1,15 @@
+package comboshed;
 import java.util.ArrayList;
+
 public class Team
 {
 	private String teamName;
-	private ArrayList schedule;
+	private ArrayList<Game> schedule;
 	
 	public Team()
 	{
 		teamName = "";
-		schedule = new ArrayList();
+		schedule = new ArrayList<>();
 	}
 	
 	public void setName(String name)
@@ -20,7 +22,7 @@ public class Team
 		return teamName;
 	}
 	
-	public ArrayList getSchedule()
+	public ArrayList<Game> getSchedule()
 	{
 		return schedule;
 	}
