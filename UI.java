@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package testing;
+package comboshed;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -71,7 +71,7 @@ public class UI extends WindowAdapter implements ActionListener {
         return listScroller;
     }
     private static Button prepareButton(String actionCommand) {
-        Button submitButton = new Button("Generate");
+        Button submitButton = new Button("Generate Schedule");
         submitButton.setBackground(Color.RED);
         submitButton.setActionCommand(actionCommand);
         submitButton.addActionListener(current);
@@ -97,7 +97,7 @@ public class UI extends WindowAdapter implements ActionListener {
     }
 
     private static JFrame prepareFrame() {
-        frame = new JFrame("ComboSchedge");
+        frame = new JFrame("ComboShed");
         frame.setSize(1500, 2000);
         frame.setLayout(new BorderLayout());
         frame.setExtendedState(0);
@@ -116,6 +116,7 @@ public class UI extends WindowAdapter implements ActionListener {
         label.setFont(new Font("Something", 1, 19));
         frame.add("Center", label);
         frame.add("Bottom", text);
+        frame.setVisible(false);
     }
 
     private static JTextPane prepareTextPane(List<Object> e)
