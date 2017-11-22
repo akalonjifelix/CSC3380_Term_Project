@@ -1,27 +1,13 @@
 package comboshed;
 
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Label;
-import java.awt.Rectangle;
-import java.awt.TextField;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.html.HTMLDocument;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 public class UI extends WindowAdapter implements ActionListener {
     private static JFrame frame;
@@ -29,19 +15,20 @@ public class UI extends WindowAdapter implements ActionListener {
     private static JList<Object> list;
     private static UI current;
     private static JTextPane text;
+    private static Label label;
 
 
     UI(String title, ArrayList array) {
         current = this;
         frame = prepareFrame(title);
         JScrollPane listb = prepareList(array.toArray());
-        Label loginLabel = new Label("Select your teams", 2);
-        loginLabel.setForeground(Color.RED);
-        loginLabel.setSize(200, 100);
-        loginLabel.setFont(new Font("Bold", Font.BOLD, 19));
+        label = new Label("Select your teams", 2);
+        label.setForeground(Color.RED);
+        label.setSize(200, 100);
+        label.setFont(new Font("Bold", Font.BOLD, 19));
         JPanel panel = prepareContainer();
         submitButton = prepareButton("generateSchedule");
-        panel.add(loginLabel);
+        panel.add(label);
         panel.add(listb);
         panel.add(submitButton);
         frame.add("Center", panel);
@@ -58,32 +45,22 @@ public class UI extends WindowAdapter implements ActionListener {
         return frame;
     }
 
-    private static JScrollPane prepareList(Object[] teamArray)
-    {
+    private static JScrollPane prepareList(Object[] teamArray) {
         list = new JList<>(teamArray);
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
         list.setVisibleRowCount(-1);
-        JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setPreferredSize(new Dimension(150, 150));
-        return listScroller;
+        JScrollPane listScroll = new JScrollPane(list);
+        listScroll.setPreferredSize(new Dimension(150, 150));
+        return listScroll;
     }
+
     private static Button prepareButton(String actionCommand) {
         Button submitButton = new Button("Generate Schedule");
         submitButton.setBackground(Color.RED);
         submitButton.setActionCommand(actionCommand);
         submitButton.addActionListener(current);
         return submitButton;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        try {
-            List selected = list.getSelectedValuesList();
-            System.out.println(selected.get(0));
-            Controller.generateSchedule(selected);
-        } catch (BadLocationException e1) {
-            System.out.println("Bad Location Exception thrown");
-        }
     }
 
     private static JPanel prepareContainer() {
@@ -94,10 +71,6 @@ public class UI extends WindowAdapter implements ActionListener {
         int y = Math.max(screenSize.height / 2 - frame.getSize().height / 2, 0);
         panel.setLocation(x, y);
         return panel;
-    }
-
-    public void windowClosing(WindowEvent e) {
-        super.windowClosing(e);
     }
 
     private static JFrame prepareFrame() {
@@ -115,45 +88,77 @@ public class UI extends WindowAdapter implements ActionListener {
         frame.dispose();
         frame = prepareFrame();
         text = prepareTextPane(e);
-        Label label = new Label("wowee!");
-        label.setForeground(Color.CYAN);
+        JScrollPane scrollPane = new JScrollPane(text);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(250, 155));
+        scrollPane.setMinimumSize(new Dimension(10, 10));
+        Label label = new Label("Your combined schedule:");
+        label.setForeground(Color.RED);
         label.setSize(200, 100);
         label.setFont(new Font("Something", 1, 19));
         JPanel panel = new JPanel();
-        panel.add("Center", label);
-        panel.add(text);
-        frame.add(panel);
+        panel.add(label);
+        panel.add(scrollPane);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        frame.getContentPane().add(BorderLayout.CENTER, panel);
+        frame.pack();
         frame.setVisible(true);
     }
 
     private static JTextPane prepareTextPane(ArrayList<Game> e) throws BadLocationException {
-        int year = 0, month = 0, day = 0;
         text = new JTextPane();
+        DefaultCaret caret = (DefaultCaret) text.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
         StyledDocument doc = text.getStyledDocument();
-        for(int i =0; i < e.size(); i++)
-        {
-            Game temp = e.get(i);
-            if(year != temp.getYear() || month != temp.getMonth() || day != temp.getDay())
-            {
-                doc.insertString(doc.getLength(), "\n" + temp.getMonth() + "/"
-                                + temp.getDay() + "/" + temp.getYear() + "\n",
+        Style regular = doc.addStyle("regular", StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE));
+        StyleConstants.setFontFamily(StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE), "SansSerif");
+        Style s = doc.addStyle("large", regular);
+        StyleConstants.setFontSize(s, 28);
+        StyleConstants.setFontSize(regular, 16);
+        Game temp = e.get(0);
+        doc.insertString(doc.getLength(), temp.getMonth() + "/" + temp.getDay() + "/" + temp.getYear() + "\n",
+                doc.getStyle("large"));
+        doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
+                doc.getStyle("regular"));
+        int year = temp.getYear();
+        int month = temp.getMonth();
+        int day = temp.getDay();
+        for (int i = 1; i < e.size(); i++) {
+            temp = e.get(i);
+            if (year != temp.getYear() || month != temp.getMonth() || day != temp.getDay()) {
+                doc.insertString(doc.getLength(), "\n" + temp.getMonth() + "/" + temp.getDay() + "/" + temp.getYear() + "\n",
                         doc.getStyle("large"));
-                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() +"\n",
+                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
                         doc.getStyle("regular"));
                 year = temp.getYear();
                 month = temp.getMonth();
                 day = temp.getDay();
-            }
-            else
-            {
+            } else {
                 doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
                         doc.getStyle("regular"));
             }
             System.out.println(temp.getName());
-            text.setStyledDocument(doc);
             text.setEditable(false);
         }
         return text;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        try {
+            Controller.generateSchedule(list.getSelectedValuesList());
+        } catch (BadLocationException e1) {
+            System.out.println("Bad Location Exception thrown");
+        }
+    }
+
+    public void windowClosing(WindowEvent e) {
+        super.windowClosing(e);
+    }
+
+    void emptyError() {
+        label.setText("Please select at least one team");
+        frame.setVisible(false);
+        frame.setVisible(true);
     }
 
 }
