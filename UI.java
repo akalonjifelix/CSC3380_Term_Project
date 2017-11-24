@@ -11,25 +11,22 @@ import java.util.ArrayList;
 
 public class UI extends WindowAdapter implements ActionListener {
     private static JFrame frame;
-    private static Button submitButton;
     private static JList<Object> list;
     private static UI current;
     private static JTextPane text;
-    private static Label label;
-
 
     UI(String title, ArrayList array) {
         current = this;
         frame = prepareFrame(title);
-        JScrollPane listb = prepareList(array.toArray());
-        label = new Label("Select your teams", 2);
+        JScrollPane listPanel = prepareList(array.toArray());
+        Label label = new Label("Select your teams", 2);
         label.setForeground(Color.RED);
         label.setSize(200, 100);
         label.setFont(new Font("Bold", Font.BOLD, 19));
         JPanel panel = prepareContainer();
-        submitButton = prepareButton("generateSchedule");
+        Button submitButton = prepareButton("generateSchedule");
         panel.add(label);
-        panel.add(listb);
+        panel.add(listPanel);
         panel.add(submitButton);
         frame.add("Center", panel);
         frame.setVisible(true);
@@ -90,7 +87,7 @@ public class UI extends WindowAdapter implements ActionListener {
         text = prepareTextPane(e);
         JScrollPane scrollPane = new JScrollPane(text);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new Dimension(250, 155));
+        scrollPane.setPreferredSize(new Dimension(500, 320));
         scrollPane.setMinimumSize(new Dimension(10, 10));
         Label label = new Label("Your combined schedule:");
         label.setForeground(Color.RED);
@@ -137,10 +134,15 @@ public class UI extends WindowAdapter implements ActionListener {
                 doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
                         doc.getStyle("regular"));
             }
-            System.out.println(temp.getName());
             text.setEditable(false);
         }
         return text;
+    }
+
+    static void emptyError() {
+        frame.setTitle("ComboShed - Please select at least one team");
+        frame.setVisible(false);
+        frame.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -153,12 +155,6 @@ public class UI extends WindowAdapter implements ActionListener {
 
     public void windowClosing(WindowEvent e) {
         super.windowClosing(e);
-    }
-
-    void emptyError() {
-        label.setText("Please select at least one team");
-        frame.setVisible(false);
-        frame.setVisible(true);
     }
 
 }
