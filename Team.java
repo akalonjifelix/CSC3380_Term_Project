@@ -24,7 +24,7 @@ public class Team
 	
 	public ArrayList<Game> getSchedule()
 	{
-		return schedule;
+		return schedule; 
 	}
 	
 	public void addGame(Game game)
