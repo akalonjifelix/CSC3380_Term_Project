@@ -115,7 +115,7 @@ public class UI extends WindowAdapter implements ActionListener {
         Game temp = e.get(0);
         doc.insertString(doc.getLength(), temp.getMonth() + "/" + temp.getDay() + "/" + temp.getYear() + "\n",
                 doc.getStyle("large"));
-        doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
+        doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "pm" + "\n",
                 doc.getStyle("regular"));
         int year = temp.getYear();
         int month = temp.getMonth();
@@ -125,13 +125,13 @@ public class UI extends WindowAdapter implements ActionListener {
             if (year != temp.getYear() || month != temp.getMonth() || day != temp.getDay()) {
                 doc.insertString(doc.getLength(), "\n" + temp.getMonth() + "/" + temp.getDay() + "/" + temp.getYear() + "\n",
                         doc.getStyle("large"));
-                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
+                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "pm" + "\n",
                         doc.getStyle("regular"));
                 year = temp.getYear();
                 month = temp.getMonth();
                 day = temp.getDay();
             } else {
-                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "\n",
+                doc.insertString(doc.getLength(), temp.getName() + " vs. " + temp.getOpponent() + " at " + temp.getTime() + "pm" + "\n",
                         doc.getStyle("regular"));
             }
             text.setEditable(false);

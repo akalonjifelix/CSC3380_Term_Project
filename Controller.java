@@ -32,6 +32,14 @@ class Controller {
                     return Integer.compare(g1.getDay(), g2.getDay());
                 }
 
+                if(g1.getTimeH() != g2.getTimeH()) {
+                    return Integer.compare(g1.getTimeH(), g2.getTimeH());
+                }
+
+                if(g1.getTimeM() != g2.getTimeM()) {
+                    return Integer.compare(g1.getTimeM(), g2.getTimeM());
+                }
+
                 return 0;
             }
         });
